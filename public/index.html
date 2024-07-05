@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>My Node.js Project</title>
+  <script type="text/javascript">
+    var clevertap = {event:[], profile:[], account:[], onUserLogin:[], notifications:[], privacy:[]};
+// replace with the CLEVERTAP_ACCOUNT_ID with the actual ACCOUNT ID value from your Dashboard -> Settings page
+clevertap.account.push({"id": "TEST-RZ5-4WZ-9W7Z"});
+clevertap.privacy.push({optOut: false}); //set the flag to true, if the user of the device opts out of sharing their data
+clevertap.privacy.push({useIP: true}); //set the flag to true, if the user agrees to share their IP data
+clevertap.dismissSpamControl=true;
+(function () {
+        var wzrk = document.createElement('script');
+        wzrk.type = 'text/javascript';
+        wzrk.async = true;
+        wzrk.src = ('https:' == document.location.protocol ? 'https://d2r1yp2w7bby2u.cloudfront.net' : 'http://static.clevertap.com') + '/js/clevertap.min.js';        
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wzrk, s);
+ })();
+ clevertap.notifications.push({
+   	"titleText": "Would you like to receive Push Notifications?",
+   	"bodyText": "We promise to only send you relevant content and give you updates on your transactions",
+   	"okButtonText": "Sign me up!",
+   	"rejectButtonText": "No thanks",
+   	"okButtonColor":"#F28046",
+   	"askAgainTimeInSeconds":5,
+  	"serviceWorkerPath": "./clevertap_sw.js" // path to your custom service worker file
+  });
+</script>
+</head>
+<body>
+  <header>
+CleverTap  </header>
+
+  <h1>Enter Your Details</h1>
+  <form id="userForm" autocomplete="off">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required><br>
+
+    <label for="address">Identity</label>
+    <input type="text" id="identity" name="identity" required><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br>
+
+    <label for="phone">Phone:</label>
+    <input type="tel" id="phone" name="phone" required><br>
+
+    
+
+    <button type="submit">Submit</button>
+  </form>
+  <h1>Additional Information</h1>
+  <form id="additionalForm" autocomplete="off">
+    <label for="customertype">Customer Type</label>
+    <input type="text" id="customertype" name="customertype" required><br>
+
+    <label for="language">Preferrad Language</label>
+    <input type="text" id="language" name="language" required><br>
+
+
+    <button type="submit">Submit</button>
+  
+  </form>
+  <h1>Event without properties</h1>
+  <button id="extrabutton" type="submit" onclick="pushevent()">Product Viewed</button>
+
+  <h1>Event with properties</h1>
+  <form id="eventForm" autocomplete="off">
+  <label for="productname">Product Name</label>
+  <input type="text" id="productname" name="productname" autocomplete="off"><br>
+
+  <label for="category">Category</label>
+  <input type="text" id="category" name="category" autocomplete="off"><br>
+
+  <label for="price">Price</label>
+  <input type="text" id="price" name="price" autocomplete="off"><br>
+  <button  type="submit">Product Viewed</button>
+  </form>
+  <h1>Channels</h1>
+  <div id="NodejsNative"> </div>
+  <div class="buttons-container">
+    <button id="button1" onclick="pushnodejs()">Push Notification</button>
+    <button id="button2" onclick="webpopupnodejs()">Web Popup Notification</button>
+    <button id="button3" onclick="webinboxnodejs()">Web Inbox</button>
+    <button id="button4" onclick="nativenodejs()">Native Display</button>
+  </div>
+  <script>
+    // JavaScript to handle form submission and send data to CleverTap
+    document.getElementById('userForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      var name = document.getElementById('name').value;
+      var identity = document.getElementById('identity').value;
+      var email = document.getElementById('email').value;
+      var phone = document.getElementById('phone').value;
+  
+      
+
+      // Sending data to CleverTap
+      clevertap.onUserLogin.push({
+        "Site": {
+          "Name": name,
+          "Identity": identity,
+          "Email": email,
+          "Phone": phone,
+         
+        }
+      });
+
+      alert('Data submitted to CleverTap!');
+      document.getElementById('userForm').reset();
+    });
+    document.getElementById('additionalForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      var customertype = document.getElementById('customertype').value;
+      var language = document.getElementById('language').value;
+     
+      // Sending additional data to CleverTap
+      clevertap.profile.push({
+        "Site": {
+              "Customer Type": customertype,
+              "Prefered Language": language
+                }
+        });
+      alert('Additional information submitted to CleverTap!');
+      document.getElementById('additionalForm').reset();
+    });
+    //event without properties
+    let pushevent = () => {
+            clevertap.event.push("Product Viewed");
+        };
+    //event with properties
+    document.getElementById('eventForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      var productname = document.getElementById('productname').value;
+      var category = document.getElementById('category').value;
+      var price = document.getElementById('price').value;
+     
+      // Sending additional data to CleverTap
+      clevertap.event.push("Product Viewed", {
+                     "Product name": productname,
+                     "Category":category,
+                     "Price":price,
+                     "Date": new Date()
+          });
+      alert('Event information submitted to CleverTap!');
+      document.getElementById('eventForm').reset();
+    });  
+    
+    let pushnodejs = () => {
+            clevertap.event.push("Push Node Js");
+        };
+    let webpopupnodejs = () => {
+            clevertap.event.push("Web Popup Node Js");
+        };
+    let webinboxnodejs = () => {
+            clevertap.event.push("Web Inbox Node Js");
+        };
+    let nativenodejs = () => {
+            clevertap.event.push("Native Display Node Js");
+        };
+    </script>
+
+</body>
+</html>
+
